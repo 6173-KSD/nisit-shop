@@ -1,0 +1,23 @@
+/* จำกัดความสูงของ Hero Carousel */
+.hero-img {
+  max-height: 480px;   /* ปรับตามที่ต้องการ เช่น 400px, 500px */
+  width: 100%;
+  object-fit: cover;   /* ให้ครอบเต็มไม่บิด */
+}
+
+/* ปรับการ์ดสินค้า */
+.product-card img {
+  height: 250px;
+  object-fit: cover;
+  transition: transform 0.4s ease;
+}
+.product-card:hover img {
+  transform: scale(1.05);
+}
+.product-card .btn {
+  transition: all 0.3s ease;
+}
+.product-card .btn:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+}
