@@ -10,7 +10,7 @@ define('ADMIN_PASS', 'admin123');
 define('DB_HOST', '127.0.0.1');
 define('DB_NAME', 'nisit_shop');
 define('DB_USER', 'root');
-define('DB_PASS', '');
+define('DB_PASS', 'KSD6173');
 
 // ตั้งค่า timezone
 date_default_timezone_set('Asia/Bangkok');
