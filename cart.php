@@ -1,82 +1,104 @@
 <?php
-require_once __DIR__ . '/db.php';
-require_once __DIR__ . '/partials/header.php';
+session_start();
+?>
+<!doctype html>
+<html lang="th">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>ตะกร้าสินค้า | MARKET</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <!-- ชี้ CSS ให้ถูก (ไฟล์ style.css อยู่ root ของโปรเจ็กต์) -->
+  <link rel="stylesheet" href="/project/style.css">
+</head>
+<body>
 
-$cart = $_SESSION['cart'] ?? [];
+<nav class="navbar navbar-expand-lg bg-white shadow-sm">
+  <div class="container">
+    <!-- กลับหน้าแรกแบบสั้นสุด -->
+    <a class="navbar-brand fw-bold" href="/project/">MARKET</a>
+  </div>
+</nav>
 
-if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    if (!check_csrf($_POST['csrf'] ?? '')) die('Invalid CSRF');
+<main class="container py-5">
+  <h3 class="fw-bold mb-4">ตะกร้าสินค้า</h3>
+  <table class="table align-middle">
+    <thead class="table-light">
+      <tr>
+        <th>สินค้า</th>
+        <th>ชื่อสินค้า</th>
+        <th>ราคา</th>
+        <th>จำนวน</th>
+        <th>รวม</th>
+        <th></th>
+      </tr>
+    </thead>
+    <tbody id="cart-body"></tbody>
+    <tfoot id="cart-foot"></tfoot>
+  </table>
 
-    if (isset($_POST['update'])) {
-        foreach ($_POST['qty'] as $id => $q) {
-            $q = max(0, (int)$q);
-            if ($q === 0) {
-                unset($_SESSION['cart'][$id]);
-            } else {
-                $_SESSION['cart'][$id]['qty'] = $q;
-            }
-        }
-        header('Location: ' . base_url('cart.php'));
-        exit;
-    }
+  <div class="d-flex justify-content-between mt-3">
+    <button class="btn btn-outline-danger" onclick="clearCart()">ลบทั้งหมด</button>
+    <div>
+      <!-- ปุ่มเลือกซื้อสินค้าต่อ ให้กลับไปหน้าแรก -->
+      <a href="/project/" class="btn btn-outline-dark me-2">เลือกซื้อสินค้าต่อ</a>
+      <a href="checkout.php" class="btn btn-success">ชำระเงิน</a>
+    </div>
+  </div>
+</main>
+
+<script>
+function renderCart(){
+  let cart = JSON.parse(localStorage.getItem("cart")) || [];
+  const body = document.getElementById('cart-body');
+  const foot = document.getElementById('cart-foot');
+
+  if(cart.length === 0){
+    body.innerHTML = `<tr><td colspan="6" class="text-center text-muted">ตะกร้าสินค้าว่างเปล่า</td></tr>`;
+    foot.innerHTML = "";
+    return;
+  }
+
+  let total = 0;
+  body.innerHTML = cart.map((item, index)=>{
+    let sum = item.price * item.qty;
+    total += sum;
+    return `<tr>
+      <td><img src="${item.img}" width="60" onerror="this.src='/project/upload/placeholder.png'"></td>
+      <td>${item.name}</td>
+      <td>${item.price.toLocaleString()} ฿</td>
+      <td><input type="number" value="${item.qty}" min="1" class="form-control" style="width:70px" onchange="updateQty(${index}, this.value)"></td>
+      <td>${sum.toLocaleString()} ฿</td>
+      <td><button class="btn btn-sm btn-outline-danger" onclick="removeItem(${index})">ลบ</button></td>
+    </tr>`;
+  }).join('');
+  foot.innerHTML = `<tr><td colspan="4" class="text-end fw-bold">รวมทั้งหมด</td><td colspan="2" class="fw-bold">${total.toLocaleString()} ฿</td></tr>`;
 }
 
-$cart = $_SESSION['cart'] ?? [];
-?>
+function updateQty(index, qty){
+  let cart = JSON.parse(localStorage.getItem("cart")) || [];
+  qty = parseInt(qty);
+  if(qty <= 0){ cart.splice(index, 1); }
+  else { cart[index].qty = qty; }
+  localStorage.setItem("cart", JSON.stringify(cart));
+  renderCart();
+}
 
-<h2>ตะกร้าสินค้า</h2>
-<form method="post">
-  <input type="hidden" name="csrf" value="<?= csrf_token() ?>">
-  <div class="table-responsive">
-    <table class="table align-middle">
-      <thead>
-        <tr>
-          <th>สินค้า</th>
-          <th class="text-center">จำนวน</th>
-          <th class="text-end">ราคา/ชิ้น</th>
-          <th class="text-end">รวม</th>
-        </tr>
-      </thead>
-      <tbody>
-        <?php $sum = 0; foreach ($cart as $item): $line = $item['price'] * $item['qty']; $sum += $line; ?>
-        <tr>
-          <td>
-            <div class="d-flex align-items-center gap-3">
-              <img src="<?= $item['image'] ? base_url('uploads/'.$item['image']) : base_url('assets/no-image.png') ?>"
-                   width="64" class="rounded">
-              <div>
-                <div class="fw-semibold"><?= htmlspecialchars($item['name']) ?></div>
-                <div class="text-muted small">ID: <?= (int)$item['id'] ?></div>
-              </div>
-            </div>
-          </td>
-          <td class="text-center" style="max-width:120px">
-            <input class="form-control text-center" type="number"
-                   name="qty[<?= (int)$item['id'] ?>]" min="0"
-                   value="<?= (int)$item['qty'] ?>">
-          </td>
-          <td class="text-end">฿<?= money($item['price']) ?></td>
-          <td class="text-end">฿<?= money($line) ?></td>
-        </tr>
-        <?php endforeach; ?>
-      </tbody>
-      <tfoot>
-        <tr>
-          <th colspan="3" class="text-end">รวมทั้งสิ้น</th>
-          <th class="text-end">฿<?= money($sum) ?></th>
-        </tr>
-      </tfoot>
-    </table>
-  </div>
+function removeItem(index){
+  let cart = JSON.parse(localStorage.getItem("cart")) || [];
+  cart.splice(index, 1);
+  localStorage.setItem("cart", JSON.stringify(cart));
+  renderCart();
+}
 
-  <div class="d-flex gap-2 justify-content-end">
-    <button class="btn btn-outline-secondary" name="update" value="1">อัปเดตจำนวน</button>
-    <a class="btn btn-primary"
-       href="<?= base_url('checkout.php') ?>"
-       <?= empty($cart) ? 'aria-disabled="true" class="btn btn-primary disabled"' : '' ?>>
-       ดำเนินการสั่งซื้อ
-    </a>
-  </div>
-</form>
+function clearCart(){
+  if(confirm("ต้องการลบสินค้าทั้งหมดใช่ไหม?")){
+    localStorage.removeItem("cart");
+    renderCart();
+  }
+}
 
-<?php require_once __DIR__ . '/partials/footer.php'; ?>
+renderCart();
+</script>
+</body>
+</html>
