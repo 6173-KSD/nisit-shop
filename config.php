@@ -15,6 +15,6 @@ define('DB_PASS', 'KSD6173');
 // ตั้งค่า timezone
 date_default_timezone_set('Asia/Bangkok');
 
-// ตั้งค่าให้เว็บใช้ UTF-8
+// บังคับให้ใช้ UTF-8 ตลอดทั้งเว็บ
 header('Content-Type: text/html; charset=utf-8');
 setlocale(LC_ALL, 'th_TH.UTF-8');

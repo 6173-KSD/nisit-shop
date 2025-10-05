@@ -1,11 +1,11 @@
 -- phpMyAdmin SQL Dump
--- version 5.0.4deb2+deb11u2
+-- version 5.2.1
 -- https://www.phpmyadmin.net/
 --
--- Host: localhost:3306
--- Generation Time: Oct 05, 2025 at 08:50 PM
--- Server version: 10.5.29-MariaDB-0+deb11u1
--- PHP Version: 7.4.33
+-- Host: 127.0.0.1
+-- Generation Time: Sep 30, 2025 at 10:39 AM
+-- Server version: 10.4.28-MariaDB
+-- PHP Version: 8.2.4
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 START TRANSACTION;
@@ -37,45 +37,31 @@ CREATE TABLE `orders` (
   `user_email` varchar(150) DEFAULT NULL,
   `pickup_option` enum('pickup','delivery') NOT NULL DEFAULT 'pickup',
   `pickup_date` date DEFAULT NULL,
-  `payment_method` varchar(50) DEFAULT NULL,
   `status` enum('pending','confirmed','preparing','ready_for_pickup','picked_up','cancelled') NOT NULL DEFAULT 'pending',
-  `created_at` timestamp NOT NULL DEFAULT current_timestamp()
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
+  `total_amount` decimal(10,2) NOT NULL DEFAULT 0.00,
+  `user_id` int(11) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Dumping data for table `orders`
 --
 
-INSERT INTO `orders` (`id`, `order_code`, `user_name`, `user_phone`, `user_email`, `pickup_option`, `pickup_date`, `payment_method`, `status`, `created_at`) VALUES
-(1, 'D24123CF', 'KSD33', '005', 'asaasda@gmail.com', 'pickup', '2025-09-22', NULL, 'pending', '2025-09-21 08:02:24'),
-(2, '50C3A523', 'KSD33', '005', 'asaasda@gmail.com', 'pickup', '2025-09-22', NULL, 'pending', '2025-09-21 08:17:10'),
-(3, 'F15B1055', 'KSD33', '005', 'asaasda@gmail.com', 'pickup', '2025-09-22', NULL, 'pending', '2025-09-21 08:51:51'),
-(4, 'D9C14A78', 'KSD33', '005', 'asaasda@gmail.com', 'pickup', '2025-09-22', NULL, 'pending', '2025-09-21 08:52:51'),
-(5, '074FB081', 'KSD33', '005', 'asaasda@gmail.com', 'pickup', '2025-09-22', NULL, 'pending', '2025-09-21 09:00:33'),
-(6, '8C69BBC7', 'KSD33', '005', '', 'pickup', '2025-09-22', NULL, 'pending', '2025-09-21 09:17:50'),
-(7, 'DA12740A', 'เค้กช็อค', '005', '6...3@msu.ac.th', 'pickup', '2025-09-22', NULL, 'cancelled', '2025-09-21 10:05:47'),
-(8, 'D8E2B1A5', 'tummai', '0971271271', 'y56y56y@gmail', 'pickup', '2025-09-30', NULL, 'pending', '2025-09-29 11:01:54'),
-(9, '46443AA1', 'เค้กช็อค', '005', '6...3@msu.ac.th', 'pickup', '2025-10-06', NULL, 'pending', '2025-10-05 09:16:35'),
-(10, 'FEEAB9BD', 'เค้กช็อค', '005', '6...3@msu.ac.th', 'pickup', '2025-10-06', NULL, 'pending', '2025-10-05 09:17:03'),
-(11, '0A503B36', 'เค้กช็อค', '005', '6...3@msu.ac.th', 'pickup', '2025-10-06', NULL, 'pending', '2025-10-05 09:17:32'),
-(12, '08451C3A', 'เค้กช็อค', '005', '6...3@msu.ac.th', 'pickup', '2025-10-06', NULL, 'pending', '2025-10-05 09:20:28'),
-(13, 'DDCDDBB7', 'เค้กช็อค', '005', '6...3@msu.ac.th', 'pickup', '2025-10-06', NULL, 'pending', '2025-10-05 09:22:37'),
-(14, 'DB9F961C', 'เค้กช็อค', '005', '6...3@msu.ac.th', 'pickup', '2025-10-06', NULL, 'pending', '2025-10-05 09:24:09'),
-(15, '33D8890C', 'เค้กช็อค', '005', '6...3@msu.ac.th', 'pickup', '2025-10-06', NULL, 'pending', '2025-10-05 09:27:37'),
-(16, 'B8F81C59', 'เค้กช็อค', '005', '6...3@msu.ac.th', 'pickup', '2025-10-06', NULL, 'pending', '2025-10-05 09:29:58'),
-(17, 'D95FACAF', 'เค้กช็อค', '005', '6...3@msu.ac.th', 'pickup', '2025-10-06', NULL, 'pending', '2025-10-05 09:31:22'),
-(18, '22701EA1', 'เค้กช็อค', '005', '6...3@msu.ac.th', 'pickup', '2025-10-06', NULL, 'pending', '2025-10-05 09:33:40'),
-(19, 'C0B3C1A5', 'เค้กช็อค', '005', '6...3@msu.ac.th', 'pickup', '2025-10-06', NULL, 'pending', '2025-10-05 09:35:13'),
-(21, 'F3985180', 'เค้กช็อค', '005', '6...3@msu.ac.th', 'pickup', '2025-10-06', NULL, 'pending', '2025-10-05 11:21:18'),
-(22, 'ACFE3FE5', 'เค้กช็อค', '005', '6...3@msu.ac.th', 'pickup', '2025-10-06', NULL, 'pending', '2025-10-05 11:23:20'),
-(23, '36528813', 'เค้กช็อค', '005', '6...3@msu.ac.th', 'pickup', '2025-10-06', NULL, 'pending', '2025-10-05 11:26:50'),
-(24, 'D67706AF', 'เค้กช็อค', '005', '6...3@msu.ac.th', 'pickup', '2025-10-06', NULL, 'pending', '2025-10-05 11:35:38'),
-(25, '9E74A840', 'เค้กช็อค', '005', '6...3@msu.ac.th', 'pickup', '2025-10-06', NULL, 'pending', '2025-10-05 11:37:44'),
-(26, '9EDBA9FB', 'เค้กช็อค', '005', '6...3@msu.ac.th', 'pickup', '2025-10-06', 'cash', 'pending', '2025-10-05 11:54:45'),
-(27, 'CAA1C74A', 'เค้กช็อค', '005', '6...3@msu.ac.th', 'pickup', '2025-10-06', 'cash', 'pending', '2025-10-05 13:12:16'),
-(28, '7C4DAABB', 'เค้กช็อค', '005', '6...3@msu.ac.th', 'pickup', '2025-10-06', 'cash', 'pending', '2025-10-05 13:15:21'),
-(29, 'EAA880D4', 'เค้กช็อค', '005', '6...3@msu.ac.th', 'pickup', '2025-10-06', 'cash', 'pending', '2025-10-05 13:28:15'),
-(30, 'C845789A', 'เค้กช็อค', '005', '6...3@msu.ac.th', 'pickup', '2025-10-06', 'cash', 'pending', '2025-10-05 13:39:38');
+INSERT INTO `orders` (`id`, `order_code`, `user_name`, `user_phone`, `user_email`, `pickup_option`, `pickup_date`, `status`, `created_at`, `total_amount`, `user_id`) VALUES
+(1, 'D24123CF', 'KSD33', '005', 'asaasda@gmail.com', 'pickup', '2025-09-22', 'pending', '2025-09-21 08:02:24', 0.00, NULL),
+(2, '50C3A523', 'KSD33', '005', 'asaasda@gmail.com', 'pickup', '2025-09-22', 'pending', '2025-09-21 08:17:10', 0.00, NULL),
+(3, 'F15B1055', 'KSD33', '005', 'asaasda@gmail.com', 'pickup', '2025-09-22', 'pending', '2025-09-21 08:51:51', 0.00, NULL),
+(4, 'D9C14A78', 'KSD33', '005', 'asaasda@gmail.com', 'pickup', '2025-09-22', 'pending', '2025-09-21 08:52:51', 0.00, NULL),
+(5, '074FB081', 'KSD33', '005', 'asaasda@gmail.com', 'pickup', '2025-09-22', 'pending', '2025-09-21 09:00:33', 0.00, NULL),
+(6, '8C69BBC7', 'KSD33', '005', '', 'pickup', '2025-09-22', 'pending', '2025-09-21 09:17:50', 0.00, NULL),
+(7, 'DA12740A', 'เค้กช็อค', '005', '6...3@msu.ac.th', 'pickup', '2025-09-22', 'cancelled', '2025-09-21 10:05:47', 0.00, NULL),
+(8, 'DE4A96F5', 'อัย', '031244865132', '5566@gmail.com', 'pickup', '2025-10-23', 'pending', '2025-09-30 07:57:34', 0.00, NULL),
+(9, 'BA1B6542', 'อัย', '031244865132', '5566@gmail.com', 'pickup', '2025-10-01', 'pending', '2025-09-30 07:57:47', 0.00, NULL),
+(10, '26F0193D', 'อัย', '031244865132', '5566@gmail.com', 'pickup', '2025-10-01', 'pending', '2025-09-30 07:58:21', 0.00, NULL),
+(11, 'CB3AE733', 'อัย', '031244865132', '5566@gmail.com', 'pickup', '2025-10-01', 'pending', '2025-09-30 08:32:39', 35.00, 6),
+(12, 'BF8D9098', 'อัย', '031244865132', '5566@gmail.com', 'pickup', '2025-10-01', 'pending', '2025-09-30 08:34:15', 7435.00, 6),
+(13, 'DB151640', 'f', '031244865132', 'asd@gmail.com', 'pickup', '2025-10-23', 'pending', '2025-09-30 08:35:26', 50.00, 5),
+(14, '9FBD75DA', 'f', '031244865132', 'asd@gmail.com', 'pickup', '2025-10-01', 'pending', '2025-09-30 08:37:04', 29.00, 5);
 
 -- --------------------------------------------------------
 
@@ -87,7 +73,6 @@ CREATE TABLE `order_items` (
   `id` int(11) NOT NULL,
   `order_id` int(11) NOT NULL,
   `product_id` int(11) NOT NULL,
-  `size` varchar(20) DEFAULT NULL,
   `qty` int(11) NOT NULL,
   `unit_price` decimal(10,2) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
@@ -96,32 +81,15 @@ CREATE TABLE `order_items` (
 -- Dumping data for table `order_items`
 --
 
-INSERT INTO `order_items` (`id`, `order_id`, `product_id`, `size`, `qty`, `unit_price`) VALUES
-(9, 9, 44, NULL, 1, '50.00'),
-(10, 9, 42, NULL, 1, '29.00'),
-(11, 9, 35, NULL, 1, '150.00'),
-(12, 10, 44, NULL, 1, '50.00'),
-(13, 11, 41, NULL, 1, '59.00'),
-(14, 12, 44, NULL, 1, '50.00'),
-(15, 13, 42, NULL, 1, '29.00'),
-(16, 14, 45, NULL, 1, '25.00'),
-(17, 15, 45, NULL, 1, '25.00'),
-(18, 16, 45, NULL, 1, '25.00'),
-(19, 17, 44, NULL, 1, '50.00'),
-(20, 18, 45, NULL, 1, '25.00'),
-(21, 19, 45, NULL, 1, '25.00'),
-(24, 24, 45, NULL, 1, '25.00'),
-(25, 24, 44, NULL, 1, '50.00'),
-(26, 25, 38, NULL, 1, '100.00'),
-(27, 26, 45, NULL, 1, '25.00'),
-(28, 27, 33, NULL, 1, '100.00'),
-(29, 28, 45, NULL, 1, '25.00'),
-(30, 28, 31, NULL, 1, '99.00'),
-(31, 29, 39, NULL, 1, '40.00'),
-(32, 29, 31, NULL, 1, '99.00'),
-(33, 30, 31, 'L', 1, '99.00'),
-(34, 30, 35, '28', 1, '150.00'),
-(35, 30, 28, 'XXL', 1, '250.00');
+INSERT INTO `order_items` (`id`, `order_id`, `product_id`, `qty`, `unit_price`) VALUES
+(8, 8, 13, 1, 99.00),
+(9, 9, 26, 1, 50.00),
+(10, 10, 26, 1, 50.00),
+(11, 11, 25, 1, 35.00),
+(12, 12, 26, 1, 50.00),
+(13, 12, 25, 211, 35.00),
+(14, 13, 26, 1, 50.00),
+(15, 14, 24, 1, 29.00);
 
 -- --------------------------------------------------------
 
@@ -148,24 +116,24 @@ CREATE TABLE `products` (
 --
 
 INSERT INTO `products` (`id`, `sku`, `name`, `description`, `price`, `stock`, `expected_restock_date`, `image`, `is_active`, `created_at`, `updated_at`) VALUES
-(28, 'SH-1', 'เสื้อเฟรชชี่ ปี2568', NULL, '250.00', 49, NULL, 'เสื้อเฟรชชี่.PNG', 1, '2025-10-01 13:08:07', '2025-10-05 13:39:38'),
-(29, 'SH-2', 'เสื้อพละ', NULL, '250.00', 125, NULL, 'เสื้อพละ.PNG', 1, '2025-10-01 13:08:07', '2025-10-01 13:08:07'),
-(30, 'SH-3', 'เสื้อนิสิตชาย', NULL, '120.00', 162, NULL, 'เสื้อนิสิตชาย.jpg', 1, '2025-10-01 13:08:07', '2025-10-01 13:08:07'),
-(31, 'SH-4', 'เสื้อนิสิตหญิง', NULL, '99.00', 174, NULL, 'เสื้อนิสิตหญิง.jpg', 1, '2025-10-01 13:08:07', '2025-10-05 13:39:38'),
-(32, 'PL-1', 'กางเกงพละ', NULL, '200.00', 99, NULL, 'กางเกงพละ.PNG', 1, '2025-10-01 13:08:07', '2025-10-01 13:08:07'),
-(33, 'PL-2', 'กางเกงนิสิตชาย', NULL, '100.00', 211, NULL, 'กางเกงนิสิตชาย.jpg', 1, '2025-10-01 13:08:07', '2025-10-05 13:12:16'),
-(34, 'PL-3', 'กระโปรงนิสิตหญิง', NULL, '99.00', 159, NULL, 'กระโปรงนิสิตหญิง.jpg', 1, '2025-10-01 13:08:07', '2025-10-01 13:08:07'),
-(35, 'PL-4', 'กระโปรงพิธีการหญิง', NULL, '150.00', 97, NULL, 'กระโปรงพิธีการหญิง.jpg', 1, '2025-10-01 13:08:07', '2025-10-05 13:39:38'),
-(36, 'PL-5', 'กางเกงพิธีการชาย', NULL, '150.00', 99, NULL, 'กางเกงพิธีการชาย.png', 1, '2025-10-01 13:08:07', '2025-10-01 13:08:07'),
-(37, 'SO-1', 'รองเท้าคัทชูหญิง', NULL, '100.00', 66, NULL, 'รองเท้าคัทชูหญิง.jpg', 1, '2025-10-01 13:08:07', '2025-10-01 13:08:07'),
-(38, 'SO-2', 'รองเท้าคัทชูชาย', NULL, '100.00', 58, NULL, 'รองเท้าคัทชูชาย.jpg', 1, '2025-10-01 13:08:07', '2025-10-05 11:37:44'),
-(39, 'OT-1', 'หัวเข็มขัดหญิง', NULL, '40.00', 542, NULL, 'หัวเข็มขัดหญิง.jpeg', 1, '2025-10-01 13:08:07', '2025-10-05 13:28:15'),
-(40, 'OT-2', 'หัวเข็มขัดชาย', NULL, '40.00', 89, NULL, 'หัวเข็มขัดชาย.jpeg', 1, '2025-10-01 13:08:07', '2025-10-01 13:08:07'),
-(41, 'KM-1', 'สายเข็มขัด', NULL, '59.00', 199, NULL, 'สายเข็มขัด.jpeg', 1, '2025-10-01 13:08:07', '2025-10-05 09:17:32'),
-(42, 'OT-3', 'กระดุมเสื้อนิสิตหญิง', NULL, '29.00', 96, NULL, 'กระดุมเสื้อนิสิตหญิง.jpeg', 1, '2025-10-01 13:08:07', '2025-10-05 09:22:37'),
-(43, 'OT-4', 'ตุ้งติ้ง', NULL, '35.00', 0, NULL, 'ตุ้งติ้ง.jpeg', 1, '2025-10-01 13:08:07', '2025-10-01 13:08:07'),
-(44, 'OT-5', 'เน็คไทด์', NULL, '50.00', 27, NULL, 'เน็คไทด์.jpeg', 1, '2025-10-01 13:08:07', '2025-10-05 11:35:38'),
-(45, 'OT-6', 'เข็มกลัดอก', NULL, '25.00', 70, NULL, 'เข็มกลัดอก.jpeg', 1, '2025-10-01 13:08:07', '2025-10-05 13:15:21');
+(10, 'SH-1', 'เสื้อเฟรชชี่ ปี2568', NULL, 250.00, 50, NULL, '1759211947_เสื้อเฟรชชี่.PNG', 1, '2025-09-30 05:59:07', '2025-09-30 05:59:07'),
+(11, 'SH-2', 'เสื้อพละ', NULL, 250.00, 125, NULL, '1759212047_เสื้อพละ.PNG', 1, '2025-09-30 06:00:47', '2025-09-30 06:00:47'),
+(12, 'SH-3', 'เสื้อนิสิตชาย', NULL, 120.00, 162, NULL, '1759212082_เสื้อนิสิตชาย.jpg', 1, '2025-09-30 06:01:22', '2025-09-30 06:01:22'),
+(13, 'SH-4', 'เสื้อนิสิตหญิง', NULL, 99.00, 177, NULL, '1759212197_เสื้อนิสิตหญิง.jpg', 1, '2025-09-30 06:03:17', '2025-09-30 07:57:34'),
+(14, 'PL-1', 'กางเกงพละ', NULL, 200.00, 99, NULL, '1759212281_กางเกงพละ.PNG', 1, '2025-09-30 06:04:41', '2025-09-30 06:04:41'),
+(15, 'PL-2', 'กางเกงนิสิตชาย', NULL, 100.00, 212, NULL, '1759212311_กางเกงนิสิตชาย.jpg', 1, '2025-09-30 06:05:11', '2025-09-30 06:05:11'),
+(16, 'PL-3', 'กระโปรงนิสิตหญิง', NULL, 99.00, 159, NULL, '1759212336_กระโปรงนิสิตหญิง.jpg', 1, '2025-09-30 06:05:36', '2025-09-30 06:05:36'),
+(17, 'PL-4', 'กระโปรงพิธีการหญิง', NULL, 150.00, 99, NULL, '1759212362_กระโปรงพิธีการหญิง.jpg', 1, '2025-09-30 06:06:02', '2025-09-30 06:06:02'),
+(18, 'PL-5', 'กางเกงพิธีการชาย', NULL, 150.00, 99, NULL, '1759212382_กางเกงพิธีการชาย.png', 1, '2025-09-30 06:06:22', '2025-09-30 06:06:22'),
+(19, 'SO-1', 'รองเท้าคัทชูหญิง', NULL, 100.00, 66, NULL, '1759212419_รองเท้าคัทชูหญิง.jpg', 1, '2025-09-30 06:06:59', '2025-09-30 07:31:26'),
+(20, 'SO-2', 'รองเท้าคัทชูชาย', NULL, 100.00, 59, NULL, '1759212438_รองเท้าคัทชูชาย.jpg', 1, '2025-09-30 06:07:18', '2025-09-30 07:31:21'),
+(21, 'OT-1', 'หัวเข็มขัดหญิง', NULL, 40.00, 543, NULL, '1759212470_หัวเข็มขัดหญิง.jpeg', 1, '2025-09-30 06:07:50', '2025-09-30 06:08:20'),
+(22, 'OT-2', 'หัวเข็มขัดชาย', NULL, 40.00, 89, NULL, '1759212492_หัวเข็มขัดชาย.jpeg', 1, '2025-09-30 06:08:12', '2025-09-30 06:08:12'),
+(23, 'KM-1', 'สายเข็มขัด', NULL, 59.00, 200, NULL, '1759212529_สายเข็มขัด.jpeg', 1, '2025-09-30 06:08:49', '2025-09-30 06:08:49'),
+(24, 'OT-3', 'กระดุมเสื้อนิสิตหญิง', NULL, 29.00, 98, NULL, '1759212556_กระดุมเสื้อนิสิตหญิง.jpeg', 1, '2025-09-30 06:09:16', '2025-09-30 08:37:04'),
+(25, 'OT-4', 'ตุ้งติ้ง', NULL, 35.00, 0, NULL, '1759212580_ตุ้งติ้ง.jpeg', 1, '2025-09-30 06:09:40', '2025-09-30 08:34:15'),
+(26, 'OT-5', 'เน็คไทด์', NULL, 50.00, 32, NULL, '1759212606_เน็คไทด์.jpeg', 1, '2025-09-30 06:10:06', '2025-09-30 08:35:26'),
+(27, 'OT-6', 'เข็มกลัดอก', NULL, 25.00, 78, NULL, '1759212623_เข็มกลัดอก.jpeg', 1, '2025-09-30 06:10:23', '2025-09-30 06:10:23');
 
 -- --------------------------------------------------------
 
@@ -187,31 +155,14 @@ CREATE TABLE `stock_movements` (
 --
 
 INSERT INTO `stock_movements` (`id`, `product_id`, `type`, `qty`, `note`, `created_at`) VALUES
-(9, 44, 'order', 1, 'order 46443AA1', '2025-10-05 09:16:35'),
-(10, 42, 'order', 1, 'order 46443AA1', '2025-10-05 09:16:35'),
-(11, 35, 'order', 1, 'order 46443AA1', '2025-10-05 09:16:35'),
-(12, 44, 'order', 1, 'order FEEAB9BD', '2025-10-05 09:17:03'),
-(13, 41, 'order', 1, 'order 0A503B36', '2025-10-05 09:17:32'),
-(14, 44, 'order', 1, 'order 08451C3A', '2025-10-05 09:20:28'),
-(15, 42, 'order', 1, 'order DDCDDBB7', '2025-10-05 09:22:37'),
-(16, 45, 'order', 1, 'order DB9F961C', '2025-10-05 09:24:09'),
-(17, 45, 'order', 1, 'order 33D8890C', '2025-10-05 09:27:37'),
-(18, 45, 'order', 1, 'order B8F81C59', '2025-10-05 09:29:58'),
-(19, 44, 'order', 1, 'order D95FACAF', '2025-10-05 09:31:22'),
-(20, 45, 'order', 1, 'order 22701EA1', '2025-10-05 09:33:40'),
-(21, 45, 'order', 1, 'order C0B3C1A5', '2025-10-05 09:35:13'),
-(22, 45, 'order', 1, 'order D67706AF', '2025-10-05 11:35:38'),
-(23, 44, 'order', 1, 'order D67706AF', '2025-10-05 11:35:38'),
-(24, 38, 'order', 1, 'order 9E74A840', '2025-10-05 11:37:44'),
-(25, 45, 'order', 1, 'order 9EDBA9FB', '2025-10-05 11:54:45'),
-(26, 33, 'order', 1, 'order CAA1C74A', '2025-10-05 13:12:16'),
-(27, 45, 'order', 1, 'order 7C4DAABB', '2025-10-05 13:15:21'),
-(28, 31, 'order', 1, 'order 7C4DAABB', '2025-10-05 13:15:21'),
-(29, 39, 'order', 1, 'order EAA880D4', '2025-10-05 13:28:15'),
-(30, 31, 'order', 1, 'order EAA880D4', '2025-10-05 13:28:15'),
-(31, 31, 'order', 1, 'order C845789A', '2025-10-05 13:39:38'),
-(32, 35, 'order', 1, 'order C845789A', '2025-10-05 13:39:38'),
-(33, 28, 'order', 1, 'order C845789A', '2025-10-05 13:39:38');
+(8, 13, 'order', 1, 'order DE4A96F5', '2025-09-30 07:57:34'),
+(9, 26, 'order', 1, 'order BA1B6542', '2025-09-30 07:57:47'),
+(10, 26, 'order', 1, 'order 26F0193D', '2025-09-30 07:58:21'),
+(11, 25, 'order', 1, 'order CB3AE733', '2025-09-30 08:32:39'),
+(12, 26, 'order', 1, 'order BF8D9098', '2025-09-30 08:34:15'),
+(13, 25, 'order', 211, 'order BF8D9098', '2025-09-30 08:34:15'),
+(14, 26, 'order', 1, 'order DB151640', '2025-09-30 08:35:26'),
+(15, 24, 'order', 1, 'order 9FBD75DA', '2025-09-30 08:37:04');
 
 -- --------------------------------------------------------
 
@@ -236,7 +187,8 @@ INSERT INTO `users` (`id`, `name`, `email`, `password`, `created_at`) VALUES
 (2, 'kkk', 'kkk@kkk.com', '$2y$10$/.ll1PiwF.oAq2SA4Sd05.ughd0x/5orYgrLU8Xk3sbBnE9bii/eG', '2025-09-21 09:23:46'),
 (3, 'kkkasd', 'kkkasd@kkkasd.com', '$2y$10$CGhkgeZj0S0XwjO6Ved7R.mf5fhJUe1qh1UCBlfCsMxiAqkcNbWQ6', '2025-09-21 09:30:00'),
 (4, 'zxc', 'zxc@zxc.com', '$2y$10$0B.AABMcOWs1d.TGRRZ5W.Ja2tsutaEGlMgTsyhq9xsjcN8OmAJMW', '2025-09-21 09:33:22'),
-(5, 'tummai', 'y56y56y@gmail', '$2y$10$4a0m8CNyH9SLNgD/RHGv5uED7UPEsXUuRCKNoOWxKrkY4M85AJpBi', '2025-09-29 10:59:35');
+(5, 'f', 'asd@gmail.com', '$2y$10$wYx/Zge2gJltw0PxOrGgHOOWvOxao3tDEcmNvv/BGD/xBURhYU/im', '2025-09-30 05:48:52'),
+(6, 'อัย', '5566@gmail.com', '$2y$10$vqBG71dokZCKDAxJ3NBBlu18jfTjy/GDDbwYtnxipTgWMNxlUSfZ2', '2025-09-30 07:36:49');
 
 --
 -- Indexes for dumped tables
@@ -286,31 +238,31 @@ ALTER TABLE `users`
 -- AUTO_INCREMENT for table `orders`
 --
 ALTER TABLE `orders`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=31;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=15;
 
 --
 -- AUTO_INCREMENT for table `order_items`
 --
 ALTER TABLE `order_items`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=36;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=16;
 
 --
 -- AUTO_INCREMENT for table `products`
 --
 ALTER TABLE `products`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=46;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=30;
 
 --
 -- AUTO_INCREMENT for table `stock_movements`
 --
 ALTER TABLE `stock_movements`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=34;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=16;
 
 --
 -- AUTO_INCREMENT for table `users`
 --
 ALTER TABLE `users`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
 
 --
 -- Constraints for dumped tables
