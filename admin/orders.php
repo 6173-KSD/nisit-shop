@@ -37,6 +37,7 @@ $rows = $pdo->query('SELECT * FROM orders ORDER BY id DESC')->fetchAll();
             <?php endforeach; ?>
           </select>
           <button class="btn btn-sm btn-primary">บันทึก</button>
+          <a href="order_detail.php?id=<?= $o['id'] ?>" class="btn btn-sm btn-outline-info">รายละเอียด</a>
         </form>
       </td>
     </tr>

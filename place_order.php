@@ -1,67 +1,89 @@
 <?php
-require_once __DIR__ . '/db.php'; require_once __DIR__ . '/functions.php';
-if ($_SERVER['REQUEST_METHOD'] !== 'POST' || !check_csrf($_POST['csrf'] ?? '')) die('Bad request');
+require_once __DIR__ . '/db.php';
+require_once __DIR__ . '/functions.php';
+session_start();
+
+// ✅ ตรวจสอบคำร้อง (Request ต้องเป็น POST เท่านั้น)
+if ($_SERVER['REQUEST_METHOD'] !== 'POST' || !check_csrf($_POST['csrf'] ?? '')) {
+    die('Bad request');
+}
+
+// ✅ ตรวจสอบว่ามีสินค้าในตะกร้าไหม
 $cart = $_SESSION['cart'] ?? [];
-if (empty($cart)) die('Cart empty');
+if (empty($cart)) {
+    die('Cart empty');
+}
 
-
-$user_name = trim($_POST['user_name'] ?? '');
-$user_phone = trim($_POST['user_phone'] ?? '');
-$user_email = trim($_POST['user_email'] ?? '');
+// ✅ รับข้อมูลจากฟอร์ม checkout.php
+$user_name     = trim($_POST['user_name'] ?? '');
+$user_phone    = trim($_POST['user_phone'] ?? '');
+$user_email    = trim($_POST['user_email'] ?? '');
 $pickup_option = $_POST['pickup_option'] ?? 'pickup';
-$pickup_date = $_POST['pickup_date'] ?? null;
-if ($user_name==='' || $user_phone==='' || empty($pickup_date)) die('ข้อมูลไม่ครบ');
+$pickup_date   = $_POST['pickup_date'] ?? null;
 
-
-// ตรวจสอบสต๊อกก่อน
-$ids = array_map('intval', array_keys($cart));
-if (empty($ids)) die('Cart error');
-$in = implode(',', array_fill(0, count($ids), '?'));
-$stmt = $pdo->prepare("SELECT id, stock FROM products WHERE id IN ($in) FOR UPDATE");
-$pdo->beginTransaction();
-$stmt->execute($ids);
-$stocks = $stmt->fetchAll();
-$map = [];
-foreach ($stocks as $s) $map[$s['id']] = (int)$s['stock'];
-foreach ($cart as $pid => $it) {
-if (($map[$pid] ?? 0) < (int)$it['qty']) {
-$pdo->rollBack();
-die('สต๊อกไม่พอสำหรับบางรายการ');
-}
+if ($user_name === '' || $user_phone === '' || empty($pickup_date)) {
+    die('ข้อมูลไม่ครบ');
 }
 
+try {
+    // เริ่มต้น Transaction
+    $pdo->beginTransaction();
 
-// บันทึกออเดอร์
-$code = order_code();
-$stmt = $pdo->prepare("INSERT INTO orders(order_code, user_name, user_phone, user_email, pickup_option, pickup_date, status) VALUES(?,?,?,?,?,?, 'pending')");
-$stmt->execute([$code, $user_name, $user_phone, $user_email, $pickup_option, $pickup_date]);
-$order_id = (int)$pdo->lastInsertId();
+    // ✅ 1. เพิ่มข้อมูลคำสั่งซื้อในตาราง orders
+    $order_code = strtoupper(bin2hex(random_bytes(4))); // เช่น 9F3C7A2B
 
+    $stmt = $pdo->prepare("
+        INSERT INTO orders 
+        (order_code, user_name, user_phone, user_email, pickup_option, pickup_date, status, created_at)
+        VALUES (?, ?, ?, ?, ?, ?, 'pending', NOW())
+    ");
+    // 👇 ต้องใส่ 6 ตัว ตามเครื่องหมาย ? ทั้งหมด
+    $stmt->execute([
+        $order_code,
+        $user_name,
+        $user_phone,
+        $user_email,
+        $pickup_option,
+        $pickup_date
+    ]);
 
-// บันทึกสินค้าและตัดสต๊อก
-$oi = $pdo->prepare("INSERT INTO order_items(order_id, product_id, qty, unit_price) VALUES(?,?,?,?)");
-$dec = $pdo->prepare("UPDATE products SET stock = stock - ? WHERE id = ?");
-$mov = $pdo->prepare("INSERT INTO stock_movements(product_id, type, qty, note) VALUES(?, 'order', ?, CONCAT('order ', ?))");
-foreach ($cart as $pid => $it) {
-$oi->execute([$order_id, $pid, (int)$it['qty'], (float)$it['price']]);
-$dec->execute([(int)$it['qty'], $pid]);
-$mov->execute([$pid, (int)$it['qty'], $code]);
+    // ✅ เอา id ของ order ล่าสุดไปใช้กับ order_items
+    $order_id = $pdo->lastInsertId();
+
+    // ✅ 2. เพิ่มสินค้าแต่ละชิ้นลงใน order_items (พร้อม size)
+    $stmtItem = $pdo->prepare("
+        INSERT INTO order_items (order_id, product_id, size, qty, unit_price)
+        VALUES (?, ?, ?, ?, ?)
+    ");
+
+    foreach ($cart as $it) {
+        $stmtItem->execute([
+            $order_id,
+            $it['id'],
+            $it['size'] ?? 'N/A', // ✅ ดึงจาก session cart
+            $it['qty'],
+            $it['price']
+        ]);
+
+        // ✅ 3. อัปเดต stock สินค้า
+        $pdo->prepare("UPDATE products SET stock = stock - ? WHERE id = ?")
+            ->execute([$it['qty'], $it['id']]);
+    }
+
+    // ✅ ยืนยันการบันทึกข้อมูลทั้งหมด
+    $pdo->commit();
+
+    // ✅ ล้าง session ตะกร้าสินค้า
+    unset($_SESSION['cart']);
+
+    // ✅ แจ้งเตือนสำเร็จ + กลับไปหน้าแรก
+    echo "<script>
+        alert('✅ สั่งซื้อสำเร็จแล้ว!\\nรหัสคำสั่งซื้อ: {$order_code}');
+        window.location.href = 'index.php';
+    </script>";
+
+} catch (Exception $e) {
+    $pdo->rollBack();
+    die('Error: ' . $e->getMessage());
 }
-$pdo->commit();
-
-
-// เคลียร์ตะกร้า
-unset($_SESSION['cart']);
-
-
-// แสดงผลลัพธ์
-require_once __DIR__ . '/partials/header.php';
 ?>
-<div class="text-center py-5">
-<h2 class="text-success">สั่งซื้อสำเร็จ!</h2>
-<p class="lead">รหัสติดตามคำสั่งซื้อของคุณคือ</p>
-<div class="display-6 fw-bold"><?= htmlspecialchars($code) ?></div>
-<p class="mt-3">สามารถติดตามสถานะได้ที่หน้า <a href="<?= base_url('track.php') ?>">ติดตามคำสั่งซื้อ</a></p>
-<a class="btn btn-primary mt-3" href="<?= base_url('products.php') ?>">เลือกซื้อสินค้าต่อ</a>
-</div>
-<?php require_once __DIR__ . '/partials/footer.php'; ?>

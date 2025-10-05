@@ -25,6 +25,9 @@ if (session_status() === PHP_SESSION_NONE) {
 
 <!-- SweetAlert -->
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
 </head>
 <body style="font-family: 'Prompt', sans-serif;">
 <!-- 

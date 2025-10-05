@@ -1,7 +1,6 @@
 <?php
 require_once __DIR__ . '/config.php';
 
-// เริ่ม session ก่อนทำงาน
 if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
@@ -16,6 +15,12 @@ try {
             PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC
         ]
     );
+
+    // ตั้งค่าภาษาไทยและ collation ให้แน่ใจ
+    $pdo->exec("SET NAMES utf8mb4");
+    $pdo->exec("SET CHARACTER SET utf8mb4");
+    $pdo->exec("SET COLLATION_CONNECTION = 'utf8mb4_general_ci'");
 } catch (PDOException $e) {
-    die('DB connection failed: ' . $e->getMessage());
+    die('❌ DB connection failed: ' . $e->getMessage());
 }
+?>

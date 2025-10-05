@@ -58,9 +58,15 @@ $sum = array_reduce($cart, fn($c,$i)=>$c+($i['price']*$i['qty']), 0);
 <div class="card card-body shadow-sm">
 <h5 class="mb-3">สรุปรายการ</h5>
 <?php foreach ($cart as $it): ?>
-<div class="d-flex justify-content-between">
-    <span><?= htmlspecialchars($it['name']) ?> × <?= (int)$it['qty'] ?></span>
-    <span>฿<?= money($it['price']*$it['qty']) ?></span>
+<div class="d-flex justify-content-between align-items-center mb-2">
+  <div>
+    <?= htmlspecialchars($it['name']) ?>
+    <?php if (!empty($it['size']) && $it['size'] !== 'N/A'): ?>
+      <small class="text-muted">| Size: <?= htmlspecialchars($it['size']) ?></small>
+    <?php endif; ?>
+    × <?= (int)$it['qty'] ?>
+  </div>
+  <div>฿<?= money($it['price']*$it['qty']) ?></div>
 </div>
 <?php endforeach; ?>
 <hr>

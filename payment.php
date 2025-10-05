@@ -1,29 +1,29 @@
 <?php
 require_once __DIR__ . '/db.php';
 require_once __DIR__ . '/functions.php';
+session_start();
 
-$order_code = $_GET['order'] ?? '';
-$st = $pdo->prepare("SELECT * FROM orders WHERE order_code=?");
-$st->execute([$order_code]);
-$order = $st->fetch();
-
-if (!$order) {
-    die("ไม่พบคำสั่งซื้อ");
+// ✅ ตรวจสอบข้อมูลชั่วคราว
+$user = $_SESSION['pending_user'] ?? null;
+$cart = $_SESSION['pending_cart'] ?? [];
+if (!$user || empty($cart)) {
+    die("ไม่พบข้อมูลการสั่งซื้อ");
 }
 
-// คำนวณยอดรวมจาก order_items
-$st = $pdo->prepare("SELECT SUM(qty*unit_price) FROM order_items WHERE order_id=?");
-$st->execute([$order['id']]);
-$total = (float)$st->fetchColumn();
-?>
-<?php require_once __DIR__ . '/partials/header.php'; ?>
-<div class="container mt-4">
-  <h2>ชำระเงินสำหรับคำสั่งซื้อ #<?=htmlspecialchars($order_code)?></h2>
-  <p>ยอดรวม: <b><?=money($total)?> บาท</b></p>
+// ✅ คำนวณยอดรวม
+$total = 0;
+foreach ($cart as $it) {
+    $total += $it['price'] * $it['qty'];
+}
 
-  <form method="post" action="upload_slip.php" enctype="multipart/form-data" class="card card-body shadow-sm">
-    <input type="hidden" name="csrf" value="<?=csrf_token()?>">
-    <input type="hidden" name="order_id" value="<?=$order['id']?>">
+require_once __DIR__ . '/partials/header.php';
+?>
+<div class="container mt-4">
+  <h2 class="fw-bold">ชำระเงิน</h2>
+  <p>ยอดรวมทั้งหมด: <b><?= money($total) ?> บาท</b></p>
+
+  <form method="post" action="confirm_payment.php" enctype="multipart/form-data" class="card card-body shadow-sm mt-3">
+    <input type="hidden" name="csrf" value="<?= csrf_token() ?>">
 
     <div class="mb-3">
       <label class="form-label">วิธีชำระเงิน</label>
@@ -37,8 +37,8 @@ $total = (float)$st->fetchColumn();
 
     <!-- PromptPay -->
     <div id="boxPromptPay" class="mb-3" style="display:none;">
-        <p>สแกน QR เพื่อโอน</p>
-        <img src="1.PNG" alt="PromptPay QR" style="max-width:220px;">
+      <p>สแกน QR เพื่อโอน</p>
+      <img src="QRCode.png" alt="PromptPay QR" style="max-width:220px;">
     </div>
 
     <!-- TrueMoney -->
@@ -52,7 +52,7 @@ $total = (float)$st->fetchColumn();
       <input type="file" name="slip" class="form-control" accept="image/*">
     </div>
 
-    <button type="submit" class="btn btn-primary">ยืนยันการชำระเงิน</button>
+    <button type="submit" class="btn btn-primary w-100">ยืนยันการชำระเงิน</button>
   </form>
 </div>
 
@@ -62,4 +62,5 @@ function togglePaymentInfo(val) {
     document.getElementById('boxTrueMoney').style.display = (val === 'truemoney') ? 'block' : 'none';
 }
 </script>
+
 <?php require_once __DIR__ . '/partials/footer.php'; ?>
