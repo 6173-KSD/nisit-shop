@@ -2,7 +2,7 @@
 require_once __DIR__ . '/../functions.php';
 
 // ลบ session admin
-unset($_SESSION['admin']);
+unset($_SESSION['user']);
 
 // กลับไปที่หน้าแรกของ shop
 header('Location: ' . base_url('index.php'));

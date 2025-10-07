@@ -8,7 +8,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $pass = trim($_POST['password'] ?? '');
 
     if ($email === ADMIN_EMAIL && $pass === ADMIN_PASS) {
-        $_SESSION['admin'] = ['email' => $email];
+        // ✅ ตั้ง session ให้ตรงกับ index.php
+        $_SESSION['user'] = [
+          'email' => $email,
+          'role'  => 'admin'
+        ];
+
         header('Location: ' . base_url('admin/index.php'));
         exit;
     } else {
@@ -16,6 +21,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 }
 ?>
+
 <!doctype html>
 <html lang="th">
 <head>
