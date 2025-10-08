@@ -26,3 +26,14 @@ function require_admin() {
         exit;
     }
 }
+// ✅ ฟังก์ชันคำนวณยอดรวมสินค้าในตะกร้า (ใช้สำหรับ Unit Test และหน้า checkout)
+function calculateCartTotal($cart) {
+    $total = 0;
+    if (!is_array($cart)) return 0;
+    foreach ($cart as $item) {
+        $price = isset($item['price']) ? (float)$item['price'] : 0;
+        $qty   = isset($item['qty']) ? (int)$item['qty'] : 0;
+        $total += $price * $qty;
+    }
+    return $total;
+}
